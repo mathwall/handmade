@@ -25,7 +25,7 @@ SECRET_KEY = '0s1bk^k5fqta81#tu#(2cj@nx+y!09ldagt3^(#e47)ip80u)x'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'handmade.pythonanywhere.com']
+ALLOWED_HOSTS = ['localhost', 'mathwall.pythonanywhere.com']
 
 
 # Application definition
