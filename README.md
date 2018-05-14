@@ -1,1 +1,3 @@
 # handmade
+
+First Django project
