@@ -1,0 +1,17 @@
+{% extends "app/base.html" %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {{ user_form.as_p }}
+        {{ profile_form.as_p }}
+        {% if user.is_authenticated %}
+            <button type="submit">Save changes</button>
+        {% else %}
+            <button type="submit">Sign up</button>
+        {% endif %}        
+    </form>
+    {% if user.is_authenticated %}    
+        <a class="btn btn-danger" href="{% url 'delete_profile' %}">Delete account</a>  
+    {% endif %}        
+{% endblock %}
