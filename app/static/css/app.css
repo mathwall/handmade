@@ -1,8 +1,26 @@
-.page-header {
-    background-color: #ff9400;
-    margin-top: 0;
-    padding: 20px 20px 20px 40px;
+@font-face {
+    font-family: 'AlexBrush';
+    src: url('AlexBrush-Regular.ttf') format('truetype');
 }
+.navbar-brand {
+    font-family: 'AlexBrush';
+    font-size: 25px;
+}
+.navbar-default {
+    background-image: linear-gradient(to bottom,#ffaa33 0,#ff9400 100%);
+}
+.navbar-default .navbar-brand {
+    color: white;
+}
+.navbar-default .navbar-nav > .active > li > a {
+    color: white;
+}
+.navbar-default .navbar-nav > li > a {
+    color: white;    
+}
+
+
+
 
 .page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active {
     color: #ffffff;

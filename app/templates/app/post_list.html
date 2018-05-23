@@ -6,7 +6,7 @@
                 <p>{{post.published_date}} </p>
             </div>
             <h1><a href="{% url 'post_detail' pk=post.pk %}">{{post.title}}</a></h1>
-            <p>{{ post.text|truncatewords:20 }}</p>
+            <p>{{ post.text|truncatewords:50 }}</p>
         </div>
     {% endfor %}
 {% endblock %}

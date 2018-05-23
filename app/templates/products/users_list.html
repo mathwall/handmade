@@ -1,0 +1,8 @@
+ {% extends 'app/base.html' %}
+ {% block content %}
+    {% for user in users %}
+        <div class="post">
+            <p>{{ user }}</p>
+        </div>
+    {% endfor %}
+{% endblock %}

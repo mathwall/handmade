@@ -1,0 +1,13 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+    <div class="product">
+        {% if user.is_authenticated %}
+            <a class="btn btn-default" href="{% url 'product_edit' pk=product.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
+            <a class="btn btn-default" href="{% url 'product_remove' pk=product.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+        {% endif %}
+        <h1>{{ product.title }}</h1>
+        <p>{{ product.description }}</p>
+        <p>PRIX : {{ product.starting_price }} €</p>
+    </div>
+{% endblock %}

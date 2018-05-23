@@ -14,11 +14,6 @@ class Profile(models.Model):
     medium_rate = models.FloatField(null=True, blank=True)
     creation_date = models.DateTimeField(default=timezone.now, blank=True)
 
-# @receiver(post_save, sender=User)
-# def create_user_profile(sender, instance, created, **kwargs):
-#     if created:
-#         Profile.objects.create(user=instance)
-
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -42,7 +37,7 @@ class Post(models.Model):
         return self.title
 
 class Category(models.Model):
-    parent_id = models.ForeignKey('Category', blank=True)
+    parent_id = models.ForeignKey('Category', null=True, blank=True)
     name = models.CharField(max_length=200)
 
     def __str__(self):
@@ -55,13 +50,14 @@ class Product(models.Model):
     description = models.TextField()
     start_date_of_sale = models.DateTimeField(
             default=timezone.now)
-    starting_price = models.FloatField(blank=True)
-    min_bid = models.FloatField(blank=True)
-    immediate_price = models.FloatField(blank=True)
+    starting_price = models.FloatField(null=True, blank=True)
+    min_bid = models.FloatField(null=True, blank=True)
+    current_price = models.FloatField(null=True, blank=True)
+    immediate_price = models.FloatField(null=True, blank=True)
     end_date_of_sale = models.DateTimeField(
             default=timezone.now)
     purchased = models.BooleanField(default=False)
-    medium_rate =  models.FloatField(blank=True)
+    medium_rate =  models.FloatField(null=True, blank=True)
     
     def __str__(self):
         return self.title

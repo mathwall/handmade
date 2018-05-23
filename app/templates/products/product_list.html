@@ -1,0 +1,13 @@
+ {% extends 'app/base.html' %}
+ {% block content %}
+    {% if user.is_authenticated %}     
+        <a class="btn btn-warning" href="{% url 'product_new' %}">Sell new product</a>
+    {% endif %}       
+    {% for product in products %}
+        <div class="product">
+            <h1><a href="{% url 'product_detail' pk=product.pk %}">{{product.title}}</a></h1>
+            <p>{{ product.description|truncatewords:20 }}</p>
+            <p>PRICE : {{ product.starting_price }} €</p>
+        </div>
+    {% endfor %}
+{% endblock %}

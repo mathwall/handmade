@@ -4,8 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.db import transaction
 from django.contrib.auth.models import User
-from .models import Post, Profile
-from .forms import PostForm, UserForm, ProfileForm
+from .models import Post, Profile, Product
+from .forms import PostForm, UserForm, ProfileForm, ProductForm
+
+# BLOG
 
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
@@ -50,6 +52,8 @@ def post_remove(request, pk):
     post = get_object_or_404(Post, pk=pk)
     post.delete()
     return redirect('post_list')
+
+# USERS
 
 # TODO ajouter les messages de succès/erreur
 # TODO gérer les erreurs de password en particulier
@@ -114,3 +118,54 @@ def update_profile(request):
 def delete_profile(request):
     request.user.delete()
     return redirect('post_list')
+
+def users_list(request):
+    users = User.objects.all()
+    return render(request, 'products/users_list.html', {'users': users})
+
+
+# PRODUCTS
+@login_required
+def product_new(request):
+    if request.method == "POST":
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.id_seller = request.user
+            product.save()
+            return redirect('product_detail', pk=product.pk)
+    else:
+        form = ProductForm()
+    return render(request, 'products/product_edit.html', {'form': form})
+
+@login_required
+def product_edit(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == "POST":
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.id_seller = request.user
+            product.save()
+            return redirect('product_detail', pk=product.pk)
+    else:
+        form = ProductForm(instance=product)
+    return render(request, 'products/product_edit.html', {'form': form})
+
+@login_required
+def product_remove(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    product.delete()
+    return redirect('product_list')
+
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    return render(request, 'products/product_detail.html', {'product': product})
+
+def product_list(request):
+    products = Product.objects.all()
+    return render(request, 'products/product_list.html', {'products': products})
+
+def my_products(request):
+    products = Product.objects.filter(id_seller=request.user)
+    return render(request, 'products/product_list.html', {'products': products})
