@@ -5,7 +5,7 @@ from django.contrib.auth import login, authenticate
 from django.db import transaction
 from django.contrib.auth.models import User
 from .models import Post, Profile, Product
-from .forms import PostForm, UserForm, ProfileForm, ProductForm
+from .forms import PostForm, UserForm, ProfileForm, ProductForm, CategoryForm
 
 # BLOG
 
@@ -55,8 +55,6 @@ def post_remove(request, pk):
 
 # USERS
 
-# TODO ajouter les messages de succès/erreur
-# TODO gérer les erreurs de password en particulier
 def signup(request):
     if request.method == 'POST':
         user_form = UserForm(request.POST)
@@ -73,9 +71,6 @@ def signup(request):
             user = authenticate(username=user.username, password=raw_password)
             login(request, user)
             return redirect('post_list')
-        else:
-            user_form = UserForm()
-            profile_form = ProfileForm()   
     else:
         user_form = UserForm()
         profile_form = ProfileForm()
@@ -84,7 +79,6 @@ def signup(request):
         'profile_form': profile_form
     })
 
-# TODO ajouter les messages de succès/erreur
 @login_required
 @transaction.atomic
 def update_profile(request):
@@ -99,12 +93,7 @@ def update_profile(request):
             user.profile.city = profile_form.cleaned_data.get('city')
             user.profile.country = profile_form.cleaned_data.get('country')
             user.save()
-            # messages.success(request, _('Your profile was successfully updated!'))
             return redirect('settings_profile')
-        else:
-            user_form = UserForm(instance=request.user)
-            profile_form = ProfileForm(instance=request.user.profile)
-            # messages.error(request, _('Please correct the error below'))
     else:
         user_form = UserForm(instance=request.user)
         profile_form = ProfileForm(instance=request.user.profile)
@@ -125,32 +114,37 @@ def users_list(request):
 
 
 # PRODUCTS
+
 @login_required
 def product_new(request):
     if request.method == "POST":
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            product = form.save(commit=False)
-            product.id_seller = request.user
+        product_form = ProductForm(request.POST)
+        if product_form.is_valid():
+            product = product_form.save(commit=False)
+            product.seller = request.user
             product.save()
             return redirect('product_detail', pk=product.pk)
     else:
-        form = ProductForm()
-    return render(request, 'products/product_edit.html', {'form': form})
+        product_form = ProductForm()
+    return render(request, 'products/product_edit.html', {
+        'product_form': product_form
+    })
 
 @login_required
 def product_edit(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == "POST":
-        form = ProductForm(request.POST, instance=product)
-        if form.is_valid():
-            product = form.save(commit=False)
-            product.id_seller = request.user
+        product_form = ProductForm(request.POST, instance=product)
+        if product_form.is_valid():
+            product = product_form.save(commit=False)
+            product.seller = request.user
             product.save()
             return redirect('product_detail', pk=product.pk)
     else:
-        form = ProductForm(instance=product)
-    return render(request, 'products/product_edit.html', {'form': form})
+        product_form = ProductForm(instance=product)
+    return render(request, 'products/product_edit.html', {
+        'product_form': product_form
+    })
 
 @login_required
 def product_remove(request, pk):
@@ -167,5 +161,20 @@ def product_list(request):
     return render(request, 'products/product_list.html', {'products': products})
 
 def my_products(request):
-    products = Product.objects.filter(id_seller=request.user)
+    products = Product.objects.filter(seller=request.user)
     return render(request, 'products/product_list.html', {'products': products})
+
+# CATEGORIES
+
+def category_new(request):
+    if request.method == "POST":
+        category_form = CategoryForm(request.POST)
+        if category_form.is_valid():
+            category = category_form.save(commit=False)
+            category.save()
+            return redirect('product_list')
+    else:
+        category_form = CategoryForm()
+    return render(request, 'products/category_new.html', {
+        'category_form': category_form
+    })

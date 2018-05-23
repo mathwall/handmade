@@ -2,7 +2,9 @@
 
 {% block content %}
     {% if form.errors %}
-        <p>Wrong username/password</p>
+        <div class="alert alert-danger">
+            <strong>Wrong username/password</strong>
+        </div>
     {% endif %}
 
     <form method="post" action="{% url 'login' %}">

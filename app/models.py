@@ -37,15 +37,15 @@ class Post(models.Model):
         return self.title
 
 class Category(models.Model):
-    parent_id = models.ForeignKey('Category', null=True, blank=True)
+    parent = models.ForeignKey('Category', null=True, blank=True)
     name = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
 
 class Product(models.Model):
-    id_seller = models.ForeignKey('auth.User')
-    id_category = models.ForeignKey('Category')
+    seller = models.ForeignKey('auth.User')
+    category = models.ForeignKey('Category')
     title = models.CharField(max_length=200)
     description = models.TextField()
     start_date_of_sale = models.DateTimeField(
@@ -63,8 +63,8 @@ class Product(models.Model):
         return self.title
 
 class RateUser(models.Model):
-    id_rated_user = models.ForeignKey('auth.User', related_name='id_rated_user')
-    id_rating_user = models.ForeignKey('auth.User', related_name='id_rating_user')
+    rated_user = models.ForeignKey('auth.User', related_name='id_rated_user')
+    rating_user = models.ForeignKey('auth.User', related_name='id_rating_user')
     rate = models.IntegerField()
     description = models.TextField()
     
@@ -72,7 +72,7 @@ class RateUser(models.Model):
         return self.rate
 
 class RateProduct(models.Model):
-    id_product = models.ForeignKey('Product')
+    product = models.ForeignKey('Product')
     rate = models.IntegerField()
     description = models.TextField()
 
@@ -80,8 +80,8 @@ class RateProduct(models.Model):
         return self.rate
 
 class Bid(models.Model):
-    id_product = models.ForeignKey('Product')
-    id_user = models.ForeignKey('auth.User')
+    product = models.ForeignKey('Product')
+    user = models.ForeignKey('auth.User')
     bid_amount = models.FloatField()
 
     def __str__(self):

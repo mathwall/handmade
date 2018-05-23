@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="product">
-        {% if user.is_authenticated %}
+        {% if user.is_authenticated and product.seller == user %}
             <a class="btn btn-default" href="{% url 'product_edit' pk=product.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
             <a class="btn btn-default" href="{% url 'product_remove' pk=product.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
         {% endif %}

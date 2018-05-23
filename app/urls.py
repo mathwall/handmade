@@ -18,4 +18,5 @@ urlpatterns = [
     url(r'^product/(?P<pk>[0-9]+)/remove/$', views.product_remove, name='product_remove'),      
     url(r'^product/all/$', views.product_list, name='product_list'),
     url(r'^product/mine/$', views.my_products, name='my_products'),
+    url(r'^category/new/$', views.category_new, name='category_new'),
 ]
