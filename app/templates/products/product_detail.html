@@ -1,13 +1,17 @@
 {% extends 'app/base.html' %}
 
 {% block content %}
-    <div class="product">
+    <div class="thumbnail">
         {% if user.is_authenticated and product.seller == user %}
             <a class="btn btn-default" href="{% url 'product_edit' pk=product.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
             <a class="btn btn-default" href="{% url 'product_remove' pk=product.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
         {% endif %}
         <h1>{{ product.title }}</h1>
-        <p>{{ product.description }}</p>
-        <p>PRIX : {{ product.starting_price }} €</p>
+        <img class="img" src="{{ media_url }}{{ product.photo }}" alt="{{ product.photo }}"/>
+        <div class="caption">
+            <p>{{ product.description }}</p>
+            <p>PRIX : {{ product.starting_price }} €</p>
+            <div class="categ">{{ product.category }}</div>
+        </div>
     </div>
 {% endblock %}

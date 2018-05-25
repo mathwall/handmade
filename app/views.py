@@ -1,8 +1,11 @@
+import operator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.db import transaction
+from django.db.models import Q
+from django.conf import settings
 from django.contrib.auth.models import User
 from .models import Post, Profile, Product
 from .forms import PostForm, UserForm, ProfileForm, ProductForm, CategoryForm
@@ -11,16 +14,16 @@ from .forms import PostForm, UserForm, ProfileForm, ProductForm, CategoryForm
 
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
-    return render(request, 'app/post_list.html', {'posts': posts})
+    return render(request, 'app/post_list.html', {'posts': posts, 'media_url': settings.MEDIA_URL})
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    return render(request, 'app/post_detail.html', {'post': post})
+    return render(request, 'app/post_detail.html', {'post': post, 'media_url': settings.MEDIA_URL})
 
 @login_required
 def post_new(request):
     if request.method == "POST":
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
@@ -36,7 +39,7 @@ def post_new(request):
 def post_edit(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if request.method == "POST":
-        form = PostForm(request.POST, instance=post)
+        form = PostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
@@ -58,7 +61,7 @@ def post_remove(request, pk):
 def signup(request):
     if request.method == 'POST':
         user_form = UserForm(request.POST)
-        profile_form = ProfileForm(request.POST)
+        profile_form = ProfileForm(request.POST, request.FILES)
         if user_form.is_valid() and profile_form.is_valid():
             user = user_form.save()
             user.refresh_from_db()
@@ -84,7 +87,7 @@ def signup(request):
 def update_profile(request):
     if request.method == 'POST':
         user_form = UserForm(request.POST, instance=request.user)
-        profile_form = ProfileForm(request.POST, instance=request.user.profile)
+        profile_form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
         if user_form.is_valid() and profile_form.is_valid():
             user = user_form.save()
             user.refresh_from_db()
@@ -93,7 +96,11 @@ def update_profile(request):
             user.profile.city = profile_form.cleaned_data.get('city')
             user.profile.country = profile_form.cleaned_data.get('country')
             user.save()
-            return redirect('settings_profile')
+            raw_password = user_form.cleaned_data.get('password2')
+            user = authenticate(username=user.username, password=raw_password)
+            login(request, user)
+            print('test')
+            return redirect('product_list')
     else:
         user_form = UserForm(instance=request.user)
         profile_form = ProfileForm(instance=request.user.profile)
@@ -110,7 +117,7 @@ def delete_profile(request):
 
 def users_list(request):
     users = User.objects.all()
-    return render(request, 'products/users_list.html', {'users': users})
+    return render(request, 'products/users_list.html', {'users': users, 'media_url': settings.MEDIA_URL})
 
 
 # PRODUCTS
@@ -118,7 +125,7 @@ def users_list(request):
 @login_required
 def product_new(request):
     if request.method == "POST":
-        product_form = ProductForm(request.POST)
+        product_form = ProductForm(request.POST, request.FILES)
         if product_form.is_valid():
             product = product_form.save(commit=False)
             product.seller = request.user
@@ -134,7 +141,7 @@ def product_new(request):
 def product_edit(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == "POST":
-        product_form = ProductForm(request.POST, instance=product)
+        product_form = ProductForm(request.POST, request.FILES, instance=product)
         if product_form.is_valid():
             product = product_form.save(commit=False)
             product.seller = request.user
@@ -154,15 +161,27 @@ def product_remove(request, pk):
 
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    return render(request, 'products/product_detail.html', {'product': product})
+    return render(request, 'products/product_detail.html', {'product': product, 'media_url': settings.MEDIA_URL})
 
 def product_list(request):
     products = Product.objects.all()
-    return render(request, 'products/product_list.html', {'products': products})
+    return render(request, 'products/product_list.html', {'products': products, 'media_url': settings.MEDIA_URL})
 
 def my_products(request):
     products = Product.objects.filter(seller=request.user)
-    return render(request, 'products/product_list.html', {'products': products})
+    return render(request, 'products/product_list.html', {'products': products, 'media_url': settings.MEDIA_URL})
+
+def search_list(request):
+    query = request.GET.get('q')
+    queryset = Product.objects.all()
+    print(query)
+    if query:
+        result = Product.objects.filter(Q(category__name__icontains=query) |
+            Q(title__icontains=query) | 
+                Q(description__icontains=query))
+    else:
+        result = ''
+    return render(request, 'products/product_list.html', {'products': result, 'media_url': settings.MEDIA_URL})
 
 # CATEGORIES
 

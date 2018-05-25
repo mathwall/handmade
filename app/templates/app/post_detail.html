@@ -1,17 +1,20 @@
 {% extends 'app/base.html' %}
 
 {% block content %}
-    <div class="post">
+    <div class="thumbnail">
+        {% if user.is_authenticated and post.author == user %}
+            <a class="btn btn-default" href="{% url 'post_edit' pk=post.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
+            <a class="btn btn-default" href="{% url 'post_remove' pk=post.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+        {% endif %}
         {% if post.published_date %}
         <div class="date">
             {{ post.published_date }}
         </div>
         {% endif %}
-        {% if user.is_authenticated and post.author == user %}
-            <a class="btn btn-default" href="{% url 'post_edit' pk=post.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
-            <a class="btn btn-default" href="{% url 'post_remove' pk=post.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
-        {% endif %}
-        <h1>{{ post.title }}</h1>
-        <p>{{ post.text }}</p>
+        <h3>{{ post.title }}</h1>
+        <img class="img" src="{{ media_url }}{{ post.photo }}" alt="{{ post.photo }}"/>
+        <div class="caption">
+            <p>{{ post.text }}</p>
+        </div>
     </div>
 {% endblock %}

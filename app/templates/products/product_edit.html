@@ -2,7 +2,7 @@
 
 {% block content %}
     <h1>New product</h1>
-    <form method="POST" class="post-form">{% csrf_token %}
+    <form method="POST" enctype="multipart/form-data" class="post-form">{% csrf_token %}
         <a class="btn btn-warning" href="{% url 'category_new' %}">Add new category</a>
         {% for field in product_form %}
             <p>

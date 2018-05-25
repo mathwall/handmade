@@ -6,6 +6,7 @@ from django.dispatch import receiver
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    photo = models.ImageField(upload_to='avatars', null=True, blank=True)    
     street = models.TextField(default='', max_length=500, blank=True)
     postal_code = models.IntegerField(null=True, blank=True)
     city = models.CharField(default='', max_length=40, blank=True)
@@ -23,6 +24,7 @@ def update_user_profile(sender, instance, created, **kwargs):
 class Post(models.Model):
     author = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
+    photo = models.ImageField(upload_to='blog', null=True, blank=True)
     text = models.TextField()
     created_date = models.DateTimeField(
             default=timezone.now)
@@ -46,6 +48,7 @@ class Category(models.Model):
 class Product(models.Model):
     seller = models.ForeignKey('auth.User')
     category = models.ForeignKey('Category')
+    photo = models.ImageField(upload_to='products', null=True, blank=True)    
     title = models.CharField(max_length=200)
     description = models.TextField()
     start_date_of_sale = models.DateTimeField(

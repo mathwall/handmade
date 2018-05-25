@@ -1,13 +1,26 @@
  {% extends 'app/base.html' %}
  {% block content %}
     {% if user.is_authenticated %}     
-        <a class="btn btn-warning" href="{% url 'product_new' %}">Sell new product</a>
-    {% endif %}       
+        <a class="btn btn-warning sell" href="{% url 'product_new' %}">Sell new product</a>
+    {% endif %}    
+    <div class="panel panel-warning">
+        <div class="panel-heading">
+            <h3 class="panel-title">Looking for a specific product?</h3>
+        </div>
+        <div class="panel-body">
+            search_form :)
+        </div>
+    </div>  
     {% for product in products %}
-        <div class="product">
-            <h1><a href="{% url 'product_detail' pk=product.pk %}">{{product.title}}</a></h1>
-            <p>{{ product.description|truncatewords:20 }}</p>
-            <p>PRICE : {{ product.starting_price }} €</p>
+        <div class="thumbnail">
+            <div class="categ">{{ product.category }}</div>
+            <img src="{{ media_url }}{{ product.photo }}" alt="{{ product.photo }}">
+            <div class="caption">
+                <h3><a href="{% url 'product_detail' pk=product.pk %}">{{product.title}}</a></h3>
+                <p>{{ product.description|truncatewords:20 }}</p>                    
+                <p>PRICE : {{ product.starting_price }} €</p>
+                <p><a href="#" class="btn btn-success" role="button">Buy</a></p>            
+            </div>
         </div>
     {% endfor %}
 {% endblock %}
