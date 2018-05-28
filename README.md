@@ -10,5 +10,5 @@ See the website online:
 http://mathwall.pythonanywhere.com/
 
 Start the project (local):
-source myvirtualenv/bin/activate
-python manage.py runserver
+* source myvirtualenv/bin/activate
+* python manage.py runserver
