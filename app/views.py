@@ -1,4 +1,6 @@
 import operator
+import json
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -7,8 +9,8 @@ from django.db import transaction
 from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.models import User
-from .models import Post, Profile, Product
-from .forms import PostForm, UserForm, ProfileForm, ProductForm, CategoryForm
+from .models import Post, Profile, Product, Category
+from .forms import PostForm, UserForm, ProfileForm, ProductForm, CategoryForm, SearchForm
 
 # BLOG
 
@@ -129,6 +131,10 @@ def product_new(request):
         if product_form.is_valid():
             product = product_form.save(commit=False)
             product.seller = request.user
+            if(request.POST.get('starting_price')):
+                product.current_price = request.POST.get('starting_price')
+            if(request.POST.get('immediate_price')):
+                product.current_price = request.POST.get('immediate_price')
             product.save()
             return redirect('product_detail', pk=product.pk)
     else:
@@ -145,6 +151,8 @@ def product_edit(request, pk):
         if product_form.is_valid():
             product = product_form.save(commit=False)
             product.seller = request.user
+            if(request.POST.get('immediate_price')):
+                product.current_price = request.POST.get('immediate_price')
             product.save()
             return redirect('product_detail', pk=product.pk)
     else:
@@ -164,14 +172,17 @@ def product_detail(request, pk):
     return render(request, 'products/product_detail.html', {'product': product, 'media_url': settings.MEDIA_URL})
 
 def product_list(request):
+    search_form = SearchForm()    
     products = Product.objects.all()
-    return render(request, 'products/product_list.html', {'products': products, 'media_url': settings.MEDIA_URL})
+    return render(request, 'products/product_list.html', {'search_form': search_form, 'products': products, 'media_url': settings.MEDIA_URL})
 
 def my_products(request):
+    search_form = SearchForm()
     products = Product.objects.filter(seller=request.user)
-    return render(request, 'products/product_list.html', {'products': products, 'media_url': settings.MEDIA_URL})
+    return render(request, 'products/product_list.html', {'search_form': search_form, 'products': products, 'media_url': settings.MEDIA_URL})
 
 def search_list(request):
+    search_form = SearchForm()
     query = request.GET.get('q')
     queryset = Product.objects.all()
     print(query)
@@ -181,7 +192,36 @@ def search_list(request):
                 Q(description__icontains=query))
     else:
         result = ''
-    return render(request, 'products/product_list.html', {'products': result, 'media_url': settings.MEDIA_URL})
+    return render(request, 'products/product_list.html', {'search_form': search_form, 'products': result, 'media_url': settings.MEDIA_URL})
+
+def advanced_search(request):
+    search_form = SearchForm(request.GET)
+    result = Product.objects.all()
+    if(request.GET.get('name') != ""):
+        result = result.filter(
+            title__icontains=request.GET.get('name')            
+        )
+    if(request.GET.get('price') != ""):
+        result = result.filter(
+            current_price__lte=request.GET.get('price')        
+        )
+    if(request.GET.get('type_of_purchase') == 'imm'):
+        result = result.filter(
+            immediate_price__gt=0
+        )
+    elif(request.GET.get('type_of_purchase') == 'bid'):
+        result = result.filter(        
+            starting_price__gt=0
+        )
+    if(request.GET.get('start_date_of_sale') != ""):
+        result = result.filter(        
+            start_date_of_sale__gte=request.GET.get('start_date_of_sale'),
+        )
+    if(request.GET.get('end_date_of_sale') != ""):
+        result = result.filter(        
+            end_date_of_sale__gte=request.GET.get('end_date_of_sale'),
+        )
+    return render(request, 'products/product_list.html', {'search_form': search_form, 'products': result, 'media_url': settings.MEDIA_URL})
 
 # CATEGORIES
 
@@ -197,3 +237,19 @@ def category_new(request):
     return render(request, 'products/category_new.html', {
         'category_form': category_form
     })
+
+def get_categories(request):
+    print("it wooorks")
+    if request.is_ajax():
+        q = request.GET.get('term', '')
+        categories = Category.objects.filter(name__icontains=q)
+        results = []
+        for categ in categories:
+            cat_json = {}
+            cat_json = categ.name
+            results.append(cat_json)
+        data = json.dumps(results)
+    else:
+        data = 'fail'
+    mimetype = 'application/json'
+    return HttpResponse(data, mimetype)

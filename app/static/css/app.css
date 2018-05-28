@@ -2,6 +2,9 @@
     font-family: 'AlexBrush';
     src: url('AlexBrush-Regular.ttf') format('truetype');
 }
+body {
+    padding-top : 7%;
+}
 .navbar-brand {
     font-family: 'AlexBrush';
     font-size: 25px;
@@ -44,12 +47,33 @@
 }
 .save {
     float: right;
+    margin-right: 2%;
 }
 a {
     color: #FE642E;
 }
 .sell {
     margin-bottom: 3%;
+}
+.center {
+    text-align: center;
+}
+#search-btn {
+    margin: auto;
+    margin-top: 7%;
+    width: 100%;
+}
+.labl {
+    margin-bottom: 0px;
+}
+.type-sale {
+    color: #DF7401;
+    font-weight: bold;
+    font-style: italic;
+}
+.alert-warning {
+    color: #DF7401;   
+    font-style: italic;     
 }
 
 .post-form textarea, .post-form input {

@@ -51,14 +51,12 @@ class Product(models.Model):
     photo = models.ImageField(upload_to='products', null=True, blank=True)    
     title = models.CharField(max_length=200)
     description = models.TextField()
-    start_date_of_sale = models.DateTimeField(
-            default=timezone.now)
+    start_date_of_sale = models.DateField()
+    end_date_of_sale = models.DateField()
     starting_price = models.FloatField(null=True, blank=True)
     min_bid = models.FloatField(null=True, blank=True)
-    current_price = models.FloatField(null=True, blank=True)
     immediate_price = models.FloatField(null=True, blank=True)
-    end_date_of_sale = models.DateTimeField(
-            default=timezone.now)
+    current_price = models.FloatField(null=True, blank=True)
     purchased = models.BooleanField(default=False)
     medium_rate =  models.FloatField(null=True, blank=True)
     

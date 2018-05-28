@@ -6,8 +6,19 @@
         <a class="btn btn-warning" href="{% url 'category_new' %}">Add new category</a>
         {% for field in product_form %}
             <p>
-                <label for="{{field.id_for_label}}">{{field.label}}</label>
-                {{ field }}
+                {% if field.label == "Starting price" %}
+                    <h5 class="alert alert-warning"><span class="glyphicon glyphicon-euro"></span> Please choose your type of sale :</h5>
+                    <h5 class="type-sale">Bidding</h5>
+                    <label for="{{field.id_for_label}}">{{field.label}}</label>
+                    {{ field }}
+                {% elif field.label == "Immediate price" %}
+                    <h5 class="type-sale">Immediate sale</h5>
+                    <label for="{{field.id_for_label}}">{{field.label}}</label>
+                    {{ field }}
+                {% else %}
+                    <label for="{{field.id_for_label}}">{{field.label}}</label>
+                    {{ field }}
+                {% endif %}                
             </p>
             {% for error in field.errors %}
                 <div class="alert alert-danger">

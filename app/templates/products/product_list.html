@@ -7,8 +7,21 @@
         <div class="panel-heading">
             <h3 class="panel-title">Looking for a specific product?</h3>
         </div>
-        <div class="panel-body">
-            search_form :)
+        <div class="panel-body row">
+            <form class="navbar-form navbar-left" action="{% url 'advanced_search' %}" method="get">
+                {% for field in search_form %}
+                    <div class="col-sm-4 col-md-4">
+                    <p class="labl">
+                        <label for="{{field.id_for_label}}">{{field.label}}</label>
+                        </p>
+                        <p>{{ field }}</p>
+                    </div>
+                {% endfor %}
+                <div class="col-sm-4 col-md-4 center">
+                    <p></p>
+                    <button type="submit" id="search-btn" class="btn btn-default">Search</button>
+                </div>
+            </form>            
         </div>
     </div>  
     {% for product in products %}
@@ -18,7 +31,7 @@
             <div class="caption">
                 <h3><a href="{% url 'product_detail' pk=product.pk %}">{{product.title}}</a></h3>
                 <p>{{ product.description|truncatewords:20 }}</p>                    
-                <p>PRICE : {{ product.starting_price }} €</p>
+                <p>PRICE : {{ product.current_price }} €</p>
                 <p><a href="#" class="btn btn-success" role="button">Buy</a></p>            
             </div>
         </div>
