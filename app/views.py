@@ -187,6 +187,7 @@ def my_products(request):
     products = Product.objects.filter(seller=request.user)
     return render(request, 'products/product_list.html', {'search_form': search_form, 'products': products, 'media_url': settings.MEDIA_URL})
 
+@login_required
 def bidding(request, product):
     product = get_object_or_404(Product, pk=product)
     if request.method == "POST":

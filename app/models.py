@@ -76,6 +76,7 @@ class RateUser(models.Model):
 
 class RateProduct(models.Model):
     product = models.ForeignKey('Product')
+    rating_user = models.ForeignKey('auth.User')    
     rate = models.IntegerField()
     description = models.TextField()
 
@@ -88,4 +89,5 @@ class Bid(models.Model):
     bid_amount = models.FloatField()
 
     def __str__(self):
-        return self.user
+        desc = str(self.product) + '/' + str(self.user) + '/' + str(self.bid_amount)
+        return desc 

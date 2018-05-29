@@ -21,6 +21,7 @@
                     <p><a href="#" class="btn btn-success" role="button">Buy now</a></p>            
                 {% elif product.starting_price > 0 %}            
                     <p><a href="{% url 'bidding' product=product.pk %}" class="btn btn-success" role="button">Make a bid</a></p>                        
+                    <p class="bid-amount">Minimum bid amount: {{ product.min_bid }} €</p>                
                 {% else %}            
                     <p><a href="#" class="btn btn-success" role="button">Ask the price to the seller</a></p>                        
                 {% endif %}

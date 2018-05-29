@@ -39,6 +39,10 @@ body {
     font-weight: bold;
     font-style: italic;    
 }
+.bid-amount {
+    color: #FA58AC;
+    font-style: italic;        
+}
 .categ {
     text-align: right;
     color: #F5BCA9;
