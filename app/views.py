@@ -1,4 +1,5 @@
 import operator
+import datetime
 import json
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -9,8 +10,8 @@ from django.db import transaction
 from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.models import User
-from .models import Post, Profile, Product, Category
-from .forms import PostForm, UserForm, ProfileForm, ProductForm, CategoryForm, SearchForm
+from .models import Post, Profile, Product, Category, Bid
+from .forms import PostForm, UserForm, ProfileForm, ProductForm, CategoryForm, SearchForm, BiddingForm
 
 # BLOG
 
@@ -167,19 +168,51 @@ def product_remove(request, pk):
     product.delete()
     return redirect('product_list')
 
-def product_detail(request, pk):
+def product_detail(request, pk, bid=None):
     product = get_object_or_404(Product, pk=pk)
-    return render(request, 'products/product_detail.html', {'product': product, 'media_url': settings.MEDIA_URL})
+    return render(request, 'products/product_detail.html', {'product': product, 'media_url': settings.MEDIA_URL, 'bid': bid})
 
-def product_list(request):
+def product_list(request, user=None):
     search_form = SearchForm()    
-    products = Product.objects.all()
-    return render(request, 'products/product_list.html', {'search_form': search_form, 'products': products, 'media_url': settings.MEDIA_URL})
+    seller = None
+    if(user != None):
+        seller = get_object_or_404(User, pk=user)
+        products = Product.objects.filter(seller=user, end_date_of_sale__gte=datetime.date.today(), start_date_of_sale__lte=datetime.date.today())
+    else:
+        products = Product.objects.filter(purchased=False, end_date_of_sale__gte=datetime.date.today(), start_date_of_sale__lte=datetime.date.today())
+    return render(request, 'products/product_list.html', {'search_form': search_form, 'seller': seller, 'products': products, 'media_url': settings.MEDIA_URL})
 
 def my_products(request):
     search_form = SearchForm()
     products = Product.objects.filter(seller=request.user)
     return render(request, 'products/product_list.html', {'search_form': search_form, 'products': products, 'media_url': settings.MEDIA_URL})
+
+def bidding(request, product):
+    product = get_object_or_404(Product, pk=product)
+    if request.method == "POST":
+        bidding_form = BiddingForm(request.POST)
+        if bidding_form.is_valid():
+            if float(request.POST.get('bid_amount')) >= product.min_bid:
+                # enregistrer l'enchère
+                bid = bidding_form.save(commit=False)
+                bid.product = product
+                bid.user = request.user
+                bid.save()
+                # mettre à jour le current_price du produit
+                product.current_price += bid.bid_amount
+                success = "Thank you, your bid has been taken into account"
+                return render(request, 'products/bidding.html', {'bidding_form': bidding_form, 'success': success, 'product': product, 'media_url': settings.MEDIA_URL})
+            else:
+                error = "You must bid at least the minimum bid amount"
+                return render(request, 'products/bidding.html', {'bidding_form': bidding_form, 'error': error, 'product': product, 'media_url': settings.MEDIA_URL})                
+    else:
+        bidding_form = BiddingForm()
+    return render(request, 'products/bidding.html', {'bidding_form': bidding_form, 'product': product, 'media_url': settings.MEDIA_URL})
+
+def purchase_history(request):
+    search_form = SearchForm()    
+    products = Product.objects.filter(buyer=request.user)
+    return render(request, 'products/product_list.html', {'purchase_history': True, 'search_form': search_form, 'products': products, 'media_url': settings.MEDIA_URL})
 
 def search_list(request):
     search_form = SearchForm()

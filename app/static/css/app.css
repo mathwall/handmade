@@ -31,6 +31,14 @@ body {
     float: right;
     color: #828282;
 }
+.sale-date {
+    color: #828282;
+}
+.seller {
+    color: #828282;
+    font-weight: bold;
+    font-style: italic;    
+}
 .categ {
     text-align: right;
     color: #F5BCA9;
@@ -54,6 +62,10 @@ a {
 }
 .sell {
     margin-bottom: 3%;
+}
+.sold {
+    color: #FF0080;
+    font-weight: bold;
 }
 .center {
     text-align: center;

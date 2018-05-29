@@ -10,7 +10,21 @@
         <img class="img" src="{{ media_url }}{{ product.photo }}" alt="{{ product.photo }}"/>
         <div class="caption">
             <p>{{ product.description }}</p>
-            <p>PRIX : {{ product.current_price }} €</p>
+            <p>{{ product.current_price }} €</p>
+            <p class="seller">Sold by: {{product.seller}}</p>            
+            <p class="sale-date">Start date of sale: {{product.start_date_of_sale}}</p>
+            <p class="sale-date">End date of sale : {{product.end_date_of_sale}}</p>
+            {% if product.purchased %}
+                <h4 class="sold">SOLD</h4>
+            {% else %}
+                {% if product.immediate_price > 0 %}
+                    <p><a href="#" class="btn btn-success" role="button">Buy now</a></p>            
+                {% elif product.starting_price > 0 %}            
+                    <p><a href="{% url 'bidding' product=product.pk %}" class="btn btn-success" role="button">Make a bid</a></p>                        
+                {% else %}            
+                    <p><a href="#" class="btn btn-success" role="button">Ask the price to the seller</a></p>                        
+                {% endif %}
+            {% endif %}
             <div class="categ">{{ product.category }}</div>
         </div>
     </div>

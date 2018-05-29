@@ -7,6 +7,7 @@ from django.dispatch import receiver
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     photo = models.ImageField(upload_to='avatars', null=True, blank=True)    
+    description = models.TextField(null=True, blank=True)
     street = models.TextField(default='', max_length=500, blank=True)
     postal_code = models.IntegerField(null=True, blank=True)
     city = models.CharField(default='', max_length=40, blank=True)
@@ -46,7 +47,8 @@ class Category(models.Model):
         return self.name
 
 class Product(models.Model):
-    seller = models.ForeignKey('auth.User')
+    seller = models.ForeignKey('auth.User', related_name='seller')
+    buyer = models.ForeignKey('auth.User', related_name='buyer', null=True, blank=True)
     category = models.ForeignKey('Category')
     photo = models.ImageField(upload_to='products', null=True, blank=True)    
     title = models.CharField(max_length=200)
@@ -58,7 +60,7 @@ class Product(models.Model):
     immediate_price = models.FloatField(null=True, blank=True)
     current_price = models.FloatField(null=True, blank=True)
     purchased = models.BooleanField(default=False)
-    medium_rate =  models.FloatField(null=True, blank=True)
+    avg_rate =  models.FloatField(null=True, blank=True)
     
     def __str__(self):
         return self.title
@@ -70,7 +72,7 @@ class RateUser(models.Model):
     description = models.TextField()
     
     def __str__(self):
-        return self.rate
+        return self.pk
 
 class RateProduct(models.Model):
     product = models.ForeignKey('Product')
@@ -78,7 +80,7 @@ class RateProduct(models.Model):
     description = models.TextField()
 
     def __str__(self):
-        return self.rate
+        return self.pk
 
 class Bid(models.Model):
     product = models.ForeignKey('Product')
@@ -86,4 +88,4 @@ class Bid(models.Model):
     bid_amount = models.FloatField()
 
     def __str__(self):
-        return self.bid_amount
+        return self.user

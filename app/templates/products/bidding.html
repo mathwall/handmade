@@ -1,0 +1,49 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+    <div class="thumbnail">
+        <h3>Your are making a bid for this product:</h2>
+        <h1>{{ product.title }}</h1>
+            <img class="img" src="{{ media_url }}{{ product.photo }}" alt="{{ product.photo }}"/>
+        <div class="caption">
+                <p>{{ product.description }}</p>
+                <p>{{ product.current_price }} €</p>
+                <p class="seller">Sold by: {{product.seller}}</p>            
+                <p class="sale-date">Start date of sale: {{product.start_date_of_sale}}</p>
+                <p class="sale-date">End date of sale : {{product.end_date_of_sale}}</p>
+                {% if product.purchased %}
+                    <h4 class="sold">Sorry, this product just got sold</h4>
+                {% else %}          
+                    {% if product.starting_price > 0 %}  
+                        {% if error %}
+                            <div class="alert alert-danger">
+                                <strong>{{ error|escape }}</strong>
+                            </div>
+                        {% endif %}    
+                        {% if success %}
+                            <div class="alert alert-success">
+                                <strong>{{ success|escape }}</strong>
+                            </div>
+                        {% endif %}    
+                        <h4 class="sold">The minimum bid for this product is : {{product.min_bid}}€</h4>
+                        <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                            {% for field in bidding_form %}
+                                <p>
+                                    <label for="{{field.id_for_label}}">{{field.label}}</label>
+                                    {{ field }}
+                                </p>
+                                {% for error in field.errors %}
+                                    <div class="alert alert-danger">
+                                        <strong>{{ error|escape }}</strong>
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
+                            <button type="submit"  class="btn btn-success">Confirm the bid</button>                        
+                        </form>
+                    {% endif %}
+                {% endif %}
+                <div class="categ">{{ product.category }}</div>
+            </div>
+        </div>
+{% endblock %}
