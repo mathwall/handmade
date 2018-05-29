@@ -16,9 +16,14 @@
             <p class="sale-date">End date of sale : {{product.end_date_of_sale}}</p>
             {% if product.purchased %}
                 <h4 class="sold">SOLD</h4>
+                {% if success %}
+                    <div class="alert alert-success">
+                        <strong>{{ success|escape }}</strong>
+                    </div>
+                {% endif %}
             {% else %}
                 {% if product.immediate_price > 0 %}
-                    <p><a href="#" class="btn btn-success" role="button">Buy now</a></p>            
+                    <p><a href="{% url 'buy_now' product=product.pk %}" class="btn btn-success" role="button">Buy now</a></p>            
                 {% elif product.starting_price > 0 %}            
                     <p><a href="{% url 'bidding' product=product.pk %}" class="btn btn-success" role="button">Make a bid</a></p>                        
                     <p class="bid-amount">Minimum bid amount: {{ product.min_bid }} €</p>                

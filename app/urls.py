@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^product/(?P<user>[0-9]+)/all/$', views.product_list, name='product_list'),
     url(r'^product/mine/$', views.my_products, name='my_products'),
     url(r'^product/(?P<product>[0-9]+)/bidding/$', views.bidding, name='bidding'),    
+    url(r'^product/(?P<product>[0-9]+)/buy_now/$', views.buy_now, name='buy_now'),    
     url(r'^product/purchased/$', views.purchase_history, name='purchase_history'),
     url(r'^product/search/$', views.search_list, name='search_list'),
     url(r'^product/search/advanced/$', views.advanced_search, name='advanced_search'),

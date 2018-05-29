@@ -173,6 +173,11 @@ def product_detail(request, pk, bid=None):
     return render(request, 'products/product_detail.html', {'product': product, 'media_url': settings.MEDIA_URL, 'bid': bid})
 
 def product_list(request, user=None):
+    products = Product.objects.all()
+    for product in products:
+        if product.end_date_of_sale < datetime.date.today() and product.buyer != null:
+            product.purchased = True
+            product.save()
     search_form = SearchForm()    
     seller = None
     if(user != None):
@@ -188,6 +193,15 @@ def my_products(request):
     return render(request, 'products/product_list.html', {'search_form': search_form, 'products': products, 'media_url': settings.MEDIA_URL})
 
 @login_required
+def buy_now(request, product):
+    product = get_object_or_404(Product, pk=product)
+    product.buyer = request.user
+    product.purchased = True
+    product.save()
+    success = "Thank you for your purchase :)"
+    return render(request, 'products/product_detail.html', {'success': success, 'product': product, 'media_url': settings.MEDIA_URL})                
+
+@login_required
 def bidding(request, product):
     product = get_object_or_404(Product, pk=product)
     if request.method == "POST":
@@ -201,6 +215,8 @@ def bidding(request, product):
                 bid.save()
                 # mettre à jour le current_price du produit
                 product.current_price += bid.bid_amount
+                product.buyer = request.user
+                product.save()
                 success = "Thank you, your bid has been taken into account"
                 return render(request, 'products/bidding.html', {'bidding_form': bidding_form, 'success': success, 'product': product, 'media_url': settings.MEDIA_URL})
             else:
