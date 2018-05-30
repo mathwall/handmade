@@ -35,7 +35,7 @@
             <div class="caption">
                 <h3><a href="{% url 'product_detail' pk=product.pk %}">{{product.title}}</a></h3>
                 <p>{{ product.description|truncatewords:20 }}</p>                    
-                <p>{{ product.current_price }} €</p>
+                <p class="price">{{ product.current_price }} €</p>
                 {% if product.purchased %}
                     <h4 class="sold">SOLD</h4>              
                 {% else %}

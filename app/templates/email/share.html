@@ -1,0 +1,35 @@
+{% extends 'app/base.html' %} 
+{% block content %}
+<div class="thumbnail">
+    <h1>{{ product.title }}</h1>
+    <img class="img" src="{{ media_url }}{{ product.photo }}" alt="{{ product.photo }}" />
+    <div class="caption">
+        <p>{{ product.description }}</p>
+        <p class="price">{{ product.current_price }} €</p>
+        <p class="seller">Sold by: {{product.seller}}</p>
+        <p class="sale-date">Start date of sale: {{product.start_date_of_sale}}</p>
+        <p class="sale-date">End date of sale: {{product.end_date_of_sale}}</p>
+    </div>
+    {% if success %}
+        <div class="alert alert-success">
+            <strong>{{ success|escape }}</strong>
+        </div>
+    {% else %}
+    <form method="POST" enctype="multipart/form-data" class="post-form">
+        {% csrf_token %} 
+        {% for field in share_form %}
+            <p>
+                <label for="{{field.id_for_label}}">I would like to recommend this product to:</label>
+                {{ field }}
+            </p>
+            {% for error in field.errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %} 
+        {% endfor %}
+        <button type="submit" class="save btn btn-success">Send email</button>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

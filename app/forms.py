@@ -49,3 +49,6 @@ class BiddingForm(forms.ModelForm):
     class Meta:
         model = Bid
         fields = ('bid_amount', )
+
+class ShareForm(forms.Form):
+    email = forms.EmailField(widget=forms.TextInput(attrs={'placeholder': 'friend@gmail.com'}))

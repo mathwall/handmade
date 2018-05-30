@@ -113,7 +113,15 @@ a {
     color: #DF7401;   
     font-style: italic;     
 }
-
 .post-form textarea, .post-form input {
+    width: 100%;
+}
+.social-button {
+    width: 25px;
+    margin: 2px;
+}
+.social-share {
+    display: flex;
+    justify-content: flex-end;
     width: 100%;
 }

@@ -1,4 +1,5 @@
 {% extends 'app/base.html' %}
+{% load static %}
 
 {% block content %}
     <div class="thumbnail">
@@ -10,7 +11,7 @@
         <img class="img" src="{{ media_url }}{{ product.photo }}" alt="{{ product.photo }}"/>
         <div class="caption">
             <p>{{ product.description }}</p>
-            <p>{{ product.current_price }} €</p>
+            <p class="price">{{ product.current_price }} €</p>
             <p class="seller">Sold by: {{product.seller}}</p>            
             <p class="sale-date">Start date of sale: {{product.start_date_of_sale}}</p>
             <p class="sale-date">End date of sale: {{product.end_date_of_sale}}</p>
@@ -31,10 +32,24 @@
                     <p><a href="#" class="btn btn-success" role="button">Ask the price to the seller</a></p>                        
                 {% endif %}
             {% endif %}
-            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.get_full_path }}">
-                    Share on Facebook
-                    </a> 
             <div class="categ">{{ product.category }}</div>
+            <div class="social-share">
+                <div class="social-button">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=mathwall.pythonanywhere.com{{ request.get_full_path }}">
+                        <img class="social-button" src="{% static 'img/facebook.png' %}" alt="Share on Facebook">
+                    </a> 
+                </div>
+                <div class="social-button">                
+                    <a href="https://twitter.com/intent/tweet?source=webclient&text=mathwall.pythonanywhere.com{{ request.get_full_path }}">
+                        <img class="social-button" src="{% static 'img/twitter.png' %}" alt="Share on Twitter">
+                    </a> 
+                </div>
+                <div class="social-button">
+                    <a href="{% url 'share_email' pk=product.pk %}">
+                        <img class="social-button" src="{% static 'img/message.png' %}" alt="Share by email">
+                    </a> 
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

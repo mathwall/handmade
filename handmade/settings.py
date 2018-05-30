@@ -127,3 +127,17 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'app/media/')
 
 LOGIN_REDIRECT_URL='/'
+
+ADMINS = [
+    ('Math', 'handmadebymath@gmail.com'),
+]
+
+EMAIL_USE_TLS = True
+
+EMAIL_HOST = 'smtp.gmail.com'
+
+EMAIL_HOST_USER = 'handmadebymath@gmail.com'
+
+EMAIL_HOST_PASSWORD = 'handmade'
+
+EMAIL_PORT = 587

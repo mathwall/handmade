@@ -1,6 +1,8 @@
 import operator
 import datetime
 import json
+from django.core.mail import mail_admins, send_mail
+from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
@@ -11,7 +13,7 @@ from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.models import User
 from .models import Post, Profile, Product, Category, Bid
-from .forms import PostForm, UserForm, ProfileForm, ProductForm, CategoryForm, SearchForm, BiddingForm
+from .forms import PostForm, UserForm, ProfileForm, ProductForm, CategoryForm, SearchForm, BiddingForm, ShareForm
 
 # BLOG
 
@@ -171,6 +173,26 @@ def product_remove(request, pk):
 def product_detail(request, pk, bid=None):
     product = get_object_or_404(Product, pk=pk)
     return render(request, 'products/product_detail.html', {'product': product, 'media_url': settings.MEDIA_URL, 'bid': bid})
+
+def share_email(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    share_form = ShareForm()
+    if request.method == "POST":
+        share_form = ShareForm(request.POST)
+        if share_form.is_valid():
+            email = share_form.cleaned_data.get('email')
+            msg_html = render_to_string('email/recommend_product.html', {'username':request.user, 'media_url': settings.MEDIA_URL, 'product': product})
+            obj = str(request.user) + ' recommended you this product'
+            send_mail(
+                obj, 
+                '',
+                'Handmade',
+                [email],
+                html_message=msg_html,
+            )
+            success= 'Thank you for sharing this product'
+            return render(request, 'email/share.html', {'success': success, 'media_url': settings.MEDIA_URL, 'product': product, 'share_form': share_form})        
+    return render(request, 'email/share.html', {'media_url': settings.MEDIA_URL, 'product': product, 'share_form': share_form})
 
 def product_list(request, user=None):
     products = Product.objects.all()
