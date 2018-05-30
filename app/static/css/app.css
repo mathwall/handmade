@@ -34,10 +34,32 @@ body {
 .sale-date {
     color: #828282;
 }
+.price {
+    color: #FA58AC;
+    font-weight: bold;
+}
 .seller {
     color: #828282;
     font-weight: bold;
     font-style: italic;    
+}
+.history-title {
+    color: #828282;
+    font-weight: bold;
+    font-style: italic;   
+    text-align: center;     
+}
+.highest-bidder {
+    color: #5FB404;
+    font-weight: bold;
+    font-style: italic;   
+    text-align: center;     
+}
+.not-highest-bidder {
+    color: #FA8258;
+    font-weight: bold;
+    font-style: italic;   
+    text-align: center;     
 }
 .bid-amount {
     color: #FA58AC;

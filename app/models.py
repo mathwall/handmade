@@ -53,8 +53,8 @@ class Product(models.Model):
     photo = models.ImageField(upload_to='products', null=True, blank=True)    
     title = models.CharField(max_length=200)
     description = models.TextField()
-    start_date_of_sale = models.DateField()
-    end_date_of_sale = models.DateField()
+    start_date_of_sale = models.DateField(null=False, blank=False)
+    end_date_of_sale = models.DateField(null=False, blank=False)
     starting_price = models.FloatField(null=True, blank=True)
     min_bid = models.FloatField(null=True, blank=True)
     immediate_price = models.FloatField(null=True, blank=True)
@@ -76,7 +76,7 @@ class RateUser(models.Model):
 
 class RateProduct(models.Model):
     product = models.ForeignKey('Product')
-    rating_user = models.ForeignKey('auth.User')    
+    rating_user = models.ForeignKey('auth.User', null=True)    
     rate = models.IntegerField()
     description = models.TextField()
 
@@ -87,6 +87,7 @@ class Bid(models.Model):
     product = models.ForeignKey('Product')
     user = models.ForeignKey('auth.User')
     bid_amount = models.FloatField()
+    date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         desc = str(self.product) + '/' + str(self.user) + '/' + str(self.bid_amount)

@@ -227,9 +227,19 @@ def bidding(request, product):
     return render(request, 'products/bidding.html', {'bidding_form': bidding_form, 'product': product, 'media_url': settings.MEDIA_URL})
 
 def purchase_history(request):
-    search_form = SearchForm()    
-    products = Product.objects.filter(buyer=request.user)
-    return render(request, 'products/product_list.html', {'purchase_history': True, 'search_form': search_form, 'products': products, 'media_url': settings.MEDIA_URL})
+    search_form = SearchForm()
+    bids = Bid.objects.filter(user=request.user)
+    products_bidded = []
+    for bid in bids:
+        products_bidded.append(bid.product.pk)
+    # produits pour lesquels il existe une bid au nom du request.user + end_date_of_sale > today
+    # indiquer si le buyer actuel est le request.user ou non
+    products_ongoing = Product.objects.filter(pk__in=products_bidded, end_date_of_sale__gte=datetime.date.today())
+    # produits pour lesquels il existe une bid au nom du request.user + purchased = True + buyer != request.user
+    products_lost = Product.objects.filter(pk__in=products_bidded, purchased=True).exclude(buyer=request.user)
+    # produits achetés
+    products_bought = Product.objects.filter(buyer=request.user, purchased = True)
+    return render(request, 'products/purchase_history.html', {'purchase_history': True, 'search_form': search_form, 'products_ongoing': products_ongoing, 'products_lost': products_lost, 'products_bought': products_bought, 'media_url': settings.MEDIA_URL})
 
 def search_list(request):
     search_form = SearchForm()
