@@ -3,16 +3,17 @@ import datetime
 import json
 from django.core.mail import mail_admins, send_mail
 from django.template.loader import render_to_string
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, Avg
 from django.conf import settings
 from django.contrib.auth.models import User
-from .models import Post, Profile, Product, Category, Bid
+from .models import Post, Profile, Product, Category, Bid, RateProduct
 from .forms import PostForm, UserForm, ProfileForm, ProductForm, CategoryForm, SearchForm, BiddingForm, ShareForm
 
 # BLOG
@@ -207,6 +208,15 @@ def product_list(request, user=None):
         products = Product.objects.filter(seller=user, end_date_of_sale__gte=datetime.date.today(), start_date_of_sale__lte=datetime.date.today())
     else:
         products = Product.objects.filter(purchased=False, end_date_of_sale__gte=datetime.date.today(), start_date_of_sale__lte=datetime.date.today())
+
+    current_user_id = request.user.id
+    print(current_user_id)
+    if current_user_id:
+        current_user = User.objects.filter(pk=current_user_id).first()
+        for p in products:
+            rate = RateProduct.objects.filter(product_id=p, rating_user=current_user_id).first()
+            p.my_rate = rate
+
     return render(request, 'products/product_list.html', {'search_form': search_form, 'seller': seller, 'products': products, 'media_url': settings.MEDIA_URL})
 
 def my_products(request):
@@ -335,3 +345,26 @@ def get_categories(request):
         data = 'fail'
     mimetype = 'application/json'
     return HttpResponse(data, mimetype)
+
+
+def rate_product(request):
+    # username = request.GET.get('username', None)
+    current_user = request.user
+    if current_user.id:
+        product_id = request.GET.get('id')
+        rate = request.GET.get('rate')
+
+        try:
+            product = Product.objects.get(pk=product_id)
+            user = User.objects.get(pk=current_user.id)
+
+            # First, we delete previous rate of this user for this product if already exist
+            RateProduct.objects.filter(product=product, rating_user=user).delete()
+            # then we add the new rate
+            RateProduct.objects.create(product=product, rating_user=user, rate=rate)
+        except ObjectDoesNotExist:
+            return JsonResponse(status=400, data={'status': 'false', 'message': "product does not exist"})
+
+        return JsonResponse(data={'status': 'true', 'new_avg': product.avg_rate, 'nb_review': product.nb_rate})
+    else:
+        return JsonResponse(status=400, data={'status': 'false', 'message': "You must be logged"})

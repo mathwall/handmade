@@ -33,6 +33,7 @@
             <div class="categ">{{ product.category }}</div>
             <img src="{{ media_url }}{{ product.photo }}" alt="{{ product.photo }}">
             <div class="caption">
+                {% include "components/bar-rating.html" with rate_type="products" type_id=product.id avg_rate=product.avg_rate nb_rate=product.nb_rate%}
                 <h3><a href="{% url 'product_detail' pk=product.pk %}">{{product.title}}</a></h3>
                 <p>{{ product.description|truncatewords:20 }}</p>                    
                 <p class="price">{{ product.current_price }} €</p>

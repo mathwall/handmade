@@ -10,6 +10,9 @@
         <h1>{{ product.title }}</h1>
         <img class="img" src="{{ media_url }}{{ product.photo }}" alt="{{ product.photo }}"/>
         <div class="caption">
+
+	        {% include "components/bar-rating.html" with rate_type="products" type_id=product.id initial_rating=product.avg_rate %}
+
             <p>{{ product.description }}</p>
             <p class="price">{{ product.current_price }} €</p>
             <p class="seller">Sold by: {{product.seller}}</p>            
@@ -52,4 +55,7 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascript %}
 {% endblock %}

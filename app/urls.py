@@ -26,5 +26,9 @@ urlpatterns = [
     url(r'^product/search/$', views.search_list, name='search_list'),
     url(r'^product/search/advanced/$', views.advanced_search, name='advanced_search'),
     url(r'^category/new/$', views.category_new, name='category_new'),
+
+    # API
     url(r'^api/get_categories/', views.get_categories, name='get_categories'),
+    url(r'^api/rates/products/', views.rate_product, name='rate_product'),
+
 ]

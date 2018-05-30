@@ -15,6 +15,13 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap-theme.min.css"> {# CSS #}
+
+
+    {# Bar Rate #}
+    <link rel="stylesheet" href="{% static 'css/bar-rating/bootstrap-stars.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bar-rating/bar-rating.css' %}">
+    <script src="{% static 'js/bar-rating/jquery.barrating.min.js' %}"></script>
+
     <link rel="stylesheet" href="{% static 'css/app.css' %}">
     <title>{% block title %} Handmade {% endblock %}</title>
 </head>
@@ -98,6 +105,8 @@
             <div class="col-md-2"></div>
         </div>
     </div>
+    {% block javascript %} {% endblock %}
+    <script src="{% static 'js/bar-rating/bar-rating.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
 </body>
 
