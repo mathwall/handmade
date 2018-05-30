@@ -175,7 +175,7 @@ def product_detail(request, pk, bid=None):
 def product_list(request, user=None):
     products = Product.objects.all()
     for product in products:
-        if product.end_date_of_sale < datetime.date.today() and product.buyer != null:
+        if product.end_date_of_sale < datetime.date.today() and product.buyer:
             product.purchased = True
             product.save()
     search_form = SearchForm()    
