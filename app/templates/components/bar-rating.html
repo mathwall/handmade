@@ -1,0 +1,12 @@
+<div class="custom-bar-rating">
+	<div>
+		{% if nb_rate %} <span class="nb-review">{{nb_rate}}</span> review(s) {% endif %}
+	</div>
+	<select class="br-select" data-rate-initial="{{avg_rate}}" data-rate-type="{{rate_type}}" data-type-id="{{type_id}}">
+		<option value="1">1</option>
+		<option value="2">2</option>
+		<option value="3">3</option>
+		<option value="4">4</option>
+		<option value="5">5</option>
+	</select>
+</div>

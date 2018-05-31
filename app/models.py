@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Avg
 from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -60,8 +61,9 @@ class Product(models.Model):
     immediate_price = models.FloatField(null=True, blank=True)
     current_price = models.FloatField(null=True, blank=True)
     purchased = models.BooleanField(default=False)
-    avg_rate =  models.FloatField(null=True, blank=True)
-    
+    avg_rate = models.FloatField(null=True, blank=True)
+    nb_rate = models.IntegerField(default=0)
+
     def __str__(self):
         return self.title
 
@@ -74,6 +76,7 @@ class RateUser(models.Model):
     def __str__(self):
         return self.pk
 
+
 class RateProduct(models.Model):
     product = models.ForeignKey('Product')
     rating_user = models.ForeignKey('auth.User', null=True)    
@@ -81,7 +84,19 @@ class RateProduct(models.Model):
     description = models.TextField()
 
     def __str__(self):
-        return self.pk
+        return self.product.title + str(self.rate)
+
+
+# Update the rate avg of the product each time a new rateProduct is created or updated
+@receiver(post_save, sender=RateProduct)
+def update_rate_product(sender, instance, created, **kwargs):
+    product = instance.product
+    avg = RateProduct.objects.filter(product=product).aggregate(Avg('rate'))
+    nb_rate = RateProduct.objects.filter(product=product).count()
+    product.avg_rate = avg['rate__avg']
+    product.nb_rate = nb_rate
+    product.save()
+
 
 class Bid(models.Model):
     product = models.ForeignKey('Product')

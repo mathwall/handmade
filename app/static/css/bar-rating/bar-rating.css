@@ -1,0 +1,14 @@
+.br-theme-bootstrap-stars .br-widget a.br-active:after {
+    color: blue;
+}
+.br-theme-bootstrap-stars .br-widget a.br-selected:after {
+    color: blue;
+}
+
+.br-theme-bootstrap-stars .br-already-selected.br-widget a.br-selected:after {
+    color: green;
+}
+
+.br-theme-bootstrap-stars .br-error.br-widget a.br-selected:after {
+    color: red;
+}
